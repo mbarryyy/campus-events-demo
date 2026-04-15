@@ -119,6 +119,122 @@ function createAuthRouter(db) {
     });
   });
 
+  // PUT /api/auth/profile — update displayName and/or email
+  router.put('/profile', authenticate, (req, res) => {
+    const { displayName, email } = req.body;
+    const userId = req.user.id;
+
+    const current = db.prepare('SELECT * FROM users WHERE id = ?').get(userId);
+    if (!current) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const updates = {};
+
+    if (displayName !== undefined) {
+      const trimmed = String(displayName).trim();
+      if (!trimmed) {
+        return res.status(400).json({ error: 'Display name cannot be empty' });
+      }
+      updates.display_name = trimmed;
+    }
+
+    if (email !== undefined) {
+      const trimmed = String(email).trim().toLowerCase();
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(trimmed)) {
+        return res.status(400).json({ error: 'Invalid email format' });
+      }
+      if (trimmed !== current.email) {
+        const existing = db.prepare('SELECT id FROM users WHERE email = ? AND id != ?').get(trimmed, userId);
+        if (existing) {
+          return res.status(400).json({ error: 'Email is already registered' });
+        }
+      }
+      updates.email = trimmed;
+    }
+
+    const sets = [];
+    const values = [];
+    for (const [col, val] of Object.entries(updates)) {
+      sets.push(`${col} = ?`);
+      values.push(val);
+    }
+
+    if (sets.length > 0) {
+      values.push(userId);
+      db.prepare(`UPDATE users SET ${sets.join(', ')} WHERE id = ?`).run(...values);
+    }
+
+    const updated = db.prepare('SELECT id, username, email, display_name, role, created_at FROM users WHERE id = ?').get(userId);
+    res.json({
+      id: updated.id,
+      username: updated.username,
+      email: updated.email,
+      displayName: updated.display_name,
+      role: updated.role,
+      createdAt: updated.created_at
+    });
+  });
+
+  // PUT /api/auth/password — change password
+  router.put('/password', authenticate, (req, res) => {
+    const { currentPassword, newPassword } = req.body;
+    const userId = req.user.id;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ error: 'Current password and new password are required' });
+    }
+
+    if (String(newPassword).length < 6) {
+      return res.status(400).json({ error: 'New password must be at least 6 characters' });
+    }
+
+    const user = db.prepare('SELECT password_hash FROM users WHERE id = ?').get(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const valid = bcrypt.compareSync(currentPassword, user.password_hash);
+    if (!valid) {
+      return res.status(401).json({ error: 'Current password is incorrect' });
+    }
+
+    const hash = bcrypt.hashSync(newPassword, 10);
+    db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(hash, userId);
+
+    res.json({ message: 'Password updated successfully' });
+  });
+
+  // GET /api/auth/activity — user's recent registrations
+  router.get('/activity', authenticate, (req, res) => {
+    const userId = req.user.id;
+
+    const registrations = db.prepare(`
+      SELECT r.id, r.registered_at,
+        e.id as eventId, e.title as eventTitle, e.date as eventDate,
+        e.time as eventTime, e.category as eventCategory, e.location as eventLocation
+      FROM registrations r
+      JOIN events e ON e.id = r.event_id
+      WHERE r.user_id = ?
+      ORDER BY r.registered_at DESC
+      LIMIT 50
+    `).all(userId).map(row => ({
+      id: row.id,
+      registeredAt: row.registered_at,
+      event: {
+        id: row.eventId,
+        title: row.eventTitle,
+        date: row.eventDate,
+        time: row.eventTime,
+        category: row.eventCategory,
+        location: row.eventLocation
+      }
+    }));
+
+    res.json({ activity: registrations });
+  });
+
   return router;
 }
 
