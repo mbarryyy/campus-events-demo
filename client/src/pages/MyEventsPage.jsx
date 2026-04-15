@@ -35,7 +35,7 @@ export default function MyEventsPage() {
       <p style={styles.subtitle}>Events you've registered for</p>
 
       {registrations.length === 0 ? (
-        <EmptyState />
+        <EmptyState title="You haven't registered for any events yet" subtitle="Check out upcoming events" />
       ) : (
         <div style={styles.list}>
           {registrations.map((reg) => {

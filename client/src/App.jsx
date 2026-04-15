@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { ToastProvider } from './contexts/ToastContext';
@@ -22,6 +22,13 @@ function AppLayout() {
   const [searchQuery, setSearchQuery] = useState('');
   const location = useLocation();
   const isAdmin = location.pathname.startsWith('/admin');
+
+  // UX #1: clear search when navigating away from home page
+  useEffect(() => {
+    if (location.pathname !== '/') {
+      setSearchQuery('');
+    }
+  }, [location.pathname]);
 
   if (isAdmin) {
     return (

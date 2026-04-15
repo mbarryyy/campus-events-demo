@@ -21,6 +21,17 @@ export default function ProfilePage() {
     }
   }, [user]);
 
+  // Bug #3: clear errors when inputs change
+  useEffect(() => {
+    setProfileErr('');
+    setProfileMsg('');
+  }, [profile.displayName, profile.email]);
+
+  useEffect(() => {
+    setPwErr('');
+    setPwMsg('');
+  }, [passwords.currentPassword, passwords.newPassword, passwords.confirmPassword]);
+
   const handleProfileSave = async (e) => {
     e.preventDefault();
     setProfileMsg(''); setProfileErr('');
@@ -35,6 +46,11 @@ export default function ProfilePage() {
   const handlePasswordChange = async (e) => {
     e.preventDefault();
     setPwMsg(''); setPwErr('');
+    // Bug #4: validate empty password fields
+    if (!passwords.currentPassword || !passwords.newPassword || !passwords.confirmPassword) {
+      setPwErr('All password fields are required');
+      return;
+    }
     if (passwords.newPassword !== passwords.confirmPassword) {
       setPwErr('Passwords do not match');
       return;
@@ -92,19 +108,19 @@ export default function ProfilePage() {
             Current Password
             <input type="password" value={passwords.currentPassword}
               onChange={(e) => setPasswords((p) => ({ ...p, currentPassword: e.target.value }))}
-              style={styles.input} required />
+              style={styles.input} />
           </label>
           <label style={styles.label}>
             New Password
             <input type="password" value={passwords.newPassword}
               onChange={(e) => setPasswords((p) => ({ ...p, newPassword: e.target.value }))}
-              style={styles.input} required />
+              style={styles.input} />
           </label>
           <label style={styles.label}>
             Confirm New Password
             <input type="password" value={passwords.confirmPassword}
               onChange={(e) => setPasswords((p) => ({ ...p, confirmPassword: e.target.value }))}
-              style={styles.input} required />
+              style={styles.input} />
           </label>
           <button type="submit" style={styles.saveBtn}>Change Password</button>
         </form>

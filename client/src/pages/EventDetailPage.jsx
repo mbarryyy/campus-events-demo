@@ -73,8 +73,23 @@ export default function EventDetailPage() {
   };
 
   if (loading) return <div style={styles.page}><p style={styles.loadingText}>Loading event...</p></div>;
-  if (error && !event) return <div style={styles.page}><p style={styles.errorText}>{error}</p></div>;
-  if (!event) return <div style={styles.page}><p style={styles.errorText}>Event not found</p></div>;
+  if ((error && !event) || !event) return (
+    <div style={styles.page}>
+      <div style={styles.notFound}>
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+          <line x1="16" y1="2" x2="16" y2="6" />
+          <line x1="8" y1="2" x2="8" y2="6" />
+          <line x1="3" y1="10" x2="21" y2="10" />
+          <line x1="10" y1="14" x2="14" y2="18" />
+          <line x1="14" y1="14" x2="10" y2="18" />
+        </svg>
+        <h2 style={styles.notFoundTitle}>Event Not Found</h2>
+        <p style={styles.notFoundMsg}>This event may have been removed or doesn't exist.</p>
+        <Link to="/" style={styles.notFoundLink}>&larr; Back to Events</Link>
+      </div>
+    </div>
+  );
 
   const catColor = CATEGORY_COLORS[event.category] || '#6366f1';
   const registered = event.registrationCount || 0;
@@ -298,5 +313,18 @@ const styles = {
   },
   placeholderText: { margin: 0, color: '#94a3b8', fontStyle: 'italic', fontSize: '0.875rem' },
   loadingText: { textAlign: 'center', color: '#64748b', padding: '60px 0' },
-  errorText: { textAlign: 'center', color: '#ef4444', padding: '60px 0' },
+  notFound: {
+    display: 'flex', flexDirection: 'column', alignItems: 'center',
+    justifyContent: 'center', minHeight: '60vh', padding: '48px 24px', textAlign: 'center',
+  },
+  notFoundTitle: {
+    fontSize: '1.5rem', fontWeight: 700, color: '#1e293b', marginTop: '16px',
+  },
+  notFoundMsg: {
+    fontSize: '1rem', color: '#64748b', marginTop: '8px', maxWidth: '400px', lineHeight: 1.5,
+  },
+  notFoundLink: {
+    marginTop: '24px', padding: '10px 24px', backgroundColor: '#6366f1', color: '#fff',
+    borderRadius: '8px', fontWeight: 600, fontSize: '0.9rem', textDecoration: 'none',
+  },
 };

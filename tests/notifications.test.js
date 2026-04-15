@@ -149,4 +149,28 @@ describe('Notifications API', () => {
     expect(res.status).toBe(200);
     expect(res.body.notifications.length).toBeGreaterThanOrEqual(1);
   });
+
+  // GIVEN a user registers for an event
+  // WHEN checking notifications
+  // THEN exactly 1 registration notification exists (no duplicates)
+  it('creates exactly one notification per registration (no duplicates)', async () => {
+    const token = getAuthToken('alice@uni.ac.nz', 'password123');
+
+    // Register for event
+    const regRes = await request(getApp())
+      .post('/api/events/3/register')
+      .set('Authorization', `Bearer ${token}`);
+    expect(regRes.status).toBe(201);
+
+    // Check notifications — should have exactly 1 registration_confirmed
+    const res = await request(getApp())
+      .get('/api/notifications')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).toBe(200);
+    const regNotifications = res.body.notifications.filter(
+      n => n.type === 'registration_confirmed' && n.message.includes('Campus Soccer Tournament')
+    );
+    expect(regNotifications).toHaveLength(1);
+  });
 });

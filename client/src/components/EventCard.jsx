@@ -37,13 +37,13 @@ function EventCard({ event, onBookmarkToggle, isBookmarked }) {
       >
         <div style={{ ...styles.hero, background: `linear-gradient(135deg, ${catColor}dd, ${catColor}88)` }}>
           <div style={styles.heroContent}>
+            <span style={{ ...styles.badge, backgroundColor: 'rgba(255,255,255,0.25)', backdropFilter: 'blur(4px)' }}>
+              {event.category}
+            </span>
             <div style={styles.heroDate}>
               <span style={styles.heroDateText}>{formatDate(event.date)}</span>
               {event.time && <span style={styles.heroTime}>{formatTime(event.time)}</span>}
             </div>
-            <span style={{ ...styles.badge, backgroundColor: 'rgba(255,255,255,0.25)', backdropFilter: 'blur(4px)' }}>
-              {event.category}
-            </span>
           </div>
           {onBookmarkToggle && (
             <button onClick={handleBookmark} style={styles.bookmarkBtn} aria-label="Bookmark">
@@ -111,6 +111,7 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
+    flexDirection: 'row-reverse',
   },
   heroDate: {
     display: 'flex',

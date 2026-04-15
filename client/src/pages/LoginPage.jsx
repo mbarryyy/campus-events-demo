@@ -13,6 +13,10 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    if (!email || !password) {
+      setError('Email and password are required');
+      return;
+    }
     setSubmitting(true);
     try {
       await login(email, password);
@@ -40,7 +44,6 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               style={styles.input}
-              required
               placeholder="you@university.ac.nz"
             />
           </label>
@@ -51,7 +54,6 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               style={styles.input}
-              required
               placeholder="Enter your password"
             />
           </label>

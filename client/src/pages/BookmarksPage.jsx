@@ -34,7 +34,7 @@ export default function BookmarksPage() {
       <p style={styles.subtitle}>Events you've bookmarked for later</p>
 
       {bookmarks.length === 0 ? (
-        <EmptyState />
+        <EmptyState title="You haven't saved any events yet" subtitle="Browse events to find something interesting" />
       ) : (
         <div style={styles.grid}>
           {bookmarks.map((bm) => {

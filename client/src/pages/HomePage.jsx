@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { getEvents, addBookmark, removeBookmark, getBookmarks } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import CategoryFilter from '../components/CategoryFilter';
@@ -10,12 +11,25 @@ const CATEGORIES = ['Tech', 'Sports', 'Academic', 'Social', 'Music', 'Career'];
 
 export default function HomePage({ searchQuery }) {
   const { user } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [events, setEvents] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1, total: 0 });
   const [selectedCategory, setSelectedCategory] = useState('');
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(() => {
+    const p = parseInt(searchParams.get('page'), 10);
+    return p > 0 ? p : 1;
+  });
   const [bookmarkedIds, setBookmarkedIds] = useState(new Set());
   const [loading, setLoading] = useState(true);
+
+  // Sync page to URL
+  useEffect(() => {
+    if (page > 1) {
+      setSearchParams({ page: String(page) }, { replace: true });
+    } else {
+      setSearchParams({}, { replace: true });
+    }
+  }, [page, setSearchParams]);
 
   useEffect(() => {
     setPage(1);

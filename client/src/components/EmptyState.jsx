@@ -1,4 +1,4 @@
-function EmptyState() {
+function EmptyState({ title = 'No events found', subtitle = 'Try adjusting your filters or search' }) {
   return (
     <div style={styles.container}>
       <svg style={styles.icon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -9,8 +9,8 @@ function EmptyState() {
         <line x1="9" y1="14" x2="15" y2="14" />
         <line x1="9" y1="18" x2="13" y2="18" />
       </svg>
-      <h3 style={styles.title}>No events found</h3>
-      <p style={styles.subtitle}>Try adjusting your filters or search</p>
+      <h3 style={styles.title}>{title}</h3>
+      <p style={styles.subtitle}>{subtitle}</p>
     </div>
   );
 }

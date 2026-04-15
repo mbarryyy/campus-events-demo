@@ -34,15 +34,20 @@ function createRegistrationsRouter(db) {
 
     const registration = db.prepare('SELECT * FROM registrations WHERE id = ?').get(result.lastInsertRowid);
 
-    // Get event title for notification
+    // Get event title for notification — guard against duplicates
     const eventInfo = db.prepare('SELECT title FROM events WHERE id = ?').get(eventId);
-    createNotification(db, {
-      userId,
-      type: 'registration_confirmed',
-      title: 'Registration Confirmed',
-      message: `You have successfully registered for "${eventInfo.title}"`,
-      eventId
-    });
+    const existingNotif = db.prepare(
+      'SELECT id FROM notifications WHERE user_id = ? AND event_id = ? AND type = ?'
+    ).get(userId, eventId, 'registration_confirmed');
+    if (!existingNotif) {
+      createNotification(db, {
+        userId,
+        type: 'registration_confirmed',
+        title: 'Registration Confirmed',
+        message: `You have successfully registered for "${eventInfo.title}"`,
+        eventId
+      });
+    }
 
     res.status(201).json({
       message: 'Successfully registered',
