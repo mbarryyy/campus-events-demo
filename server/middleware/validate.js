@@ -1,7 +1,7 @@
-const VALID_CATEGORIES = ['Tech', 'Sports'];
+const VALID_CATEGORIES = ['Tech', 'Sports', 'Academic', 'Social', 'Music', 'Career'];
 
 function validateEventBody(req, res, next) {
-  const { title, date, category } = req.body;
+  const { title, date, category, time, location, capacity } = req.body;
 
   if (title === undefined || title === null) {
     return res.status(400).json({ error: 'Title is required' });
@@ -22,10 +22,40 @@ function validateEventBody(req, res, next) {
   }
 
   if (!category || !VALID_CATEGORIES.includes(category)) {
-    return res.status(400).json({ error: 'Category must be Tech or Sports' });
+    return res.status(400).json({ error: `Category must be one of: ${VALID_CATEGORIES.join(', ')}` });
+  }
+
+  if (!time) {
+    return res.status(400).json({ error: 'Time is required (HH:MM format)' });
+  }
+  const timeRegex = /^\d{2}:\d{2}$/;
+  if (!timeRegex.test(time)) {
+    return res.status(400).json({ error: 'Time must be in HH:MM format' });
+  }
+
+  if (!location || !String(location).trim()) {
+    return res.status(400).json({ error: 'Location is required' });
+  }
+
+  if (capacity === undefined || capacity === null) {
+    return res.status(400).json({ error: 'Capacity is required' });
+  }
+  const cap = Number(capacity);
+  if (!Number.isInteger(cap) || cap < 1) {
+    return res.status(400).json({ error: 'Capacity must be a positive integer' });
+  }
+
+  if (req.body.description !== undefined && req.body.description !== null) {
+    const desc = String(req.body.description).trim();
+    if (desc.length > 1000) {
+      return res.status(400).json({ error: 'Description must be 1000 characters or fewer' });
+    }
+    req.body.description = desc || null;
   }
 
   req.body.title = trimmedTitle;
+  req.body.location = String(location).trim();
+  req.body.capacity = cap;
   next();
 }
 
