@@ -1,42 +1,55 @@
 import { useState, useEffect } from 'react';
 import { getEvents } from './services/api';
+import Header from './components/Header';
 import CategoryFilter from './components/CategoryFilter';
 import EventList from './components/EventList';
+import EventModal from './components/EventModal';
 
-const CATEGORIES = ['Tech', 'Sports'];
+const CATEGORIES = ['Tech', 'Sports', 'Academic', 'Social'];
 
 function App() {
   const [events, setEvents] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
   useEffect(() => {
-    getEvents(selectedCategory || undefined)
+    getEvents(selectedCategory || undefined, searchQuery || undefined)
       .then(setEvents)
       .catch((err) => console.error('Failed to load events:', err));
-  }, [selectedCategory]);
+  }, [selectedCategory, searchQuery]);
 
   return (
-    <div style={styles.container}>
-      <h1 style={styles.heading}>Campus Events</h1>
-      <CategoryFilter
-        categories={CATEGORIES}
-        selected={selectedCategory}
-        onChange={setSelectedCategory}
-      />
-      <EventList events={events} />
+    <div>
+      <Header searchQuery={searchQuery} onSearchChange={setSearchQuery} />
+      <main style={styles.main}>
+        <div style={styles.filterSection}>
+          <CategoryFilter
+            categories={CATEGORIES}
+            selected={selectedCategory}
+            onChange={setSelectedCategory}
+          />
+        </div>
+        <EventList events={events} onEventClick={setSelectedEvent} />
+        {selectedEvent && (
+          <EventModal
+            event={selectedEvent}
+            onClose={() => setSelectedEvent(null)}
+          />
+        )}
+      </main>
     </div>
   );
 }
 
 const styles = {
-  container: {
-    maxWidth: '640px',
+  main: {
+    maxWidth: '1200px',
     margin: '0 auto',
-    padding: '24px 16px',
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    padding: '32px 24px',
   },
-  heading: {
-    marginBottom: '20px',
+  filterSection: {
+    marginBottom: '28px',
   },
 };
 

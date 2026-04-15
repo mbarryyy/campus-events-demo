@@ -1,27 +1,53 @@
+const CATEGORY_META = {
+  All: { color: '#6366f1' },
+  Tech: { color: '#3b82f6' },
+  Sports: { color: '#10b981' },
+  Academic: { color: '#8b5cf6' },
+  Social: { color: '#ec4899' },
+};
+
 function CategoryFilter({ categories, selected, onChange }) {
+  const allCats = ['All', ...categories];
+
   return (
     <div style={styles.container}>
-      <button
-        style={{
-          ...styles.button,
-          ...(selected === '' ? styles.active : {}),
-        }}
-        onClick={() => onChange('')}
-      >
-        All
-      </button>
-      {categories.map((cat) => (
-        <button
-          key={cat}
-          style={{
-            ...styles.button,
-            ...(selected === cat ? styles.active : {}),
-          }}
-          onClick={() => onChange(cat)}
-        >
-          {cat}
-        </button>
-      ))}
+      {allCats.map((cat) => {
+        const isActive = cat === 'All' ? selected === '' : selected === cat;
+        const meta = CATEGORY_META[cat] || { color: '#6366f1' };
+
+        return (
+          <button
+            key={cat}
+            style={{
+              ...styles.pill,
+              ...(isActive
+                ? { backgroundColor: meta.color, color: '#fff', borderColor: meta.color }
+                : {}),
+            }}
+            onClick={() => onChange(cat === 'All' ? '' : cat)}
+            onMouseEnter={(e) => {
+              if (!isActive) {
+                e.currentTarget.style.backgroundColor = meta.color + '14';
+                e.currentTarget.style.borderColor = meta.color + '40';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!isActive) {
+                e.currentTarget.style.backgroundColor = '#fff';
+                e.currentTarget.style.borderColor = '#e2e8f0';
+              }
+            }}
+          >
+            <span
+              style={{
+                ...styles.dot,
+                backgroundColor: isActive ? '#fff' : meta.color,
+              }}
+            />
+            {cat}
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -29,22 +55,29 @@ function CategoryFilter({ categories, selected, onChange }) {
 const styles = {
   container: {
     display: 'flex',
-    gap: '8px',
-    marginBottom: '20px',
+    gap: '10px',
+    flexWrap: 'wrap',
   },
-  button: {
-    padding: '8px 16px',
-    border: '1px solid #cbd5e1',
-    borderRadius: '6px',
+  pill: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '6px',
+    padding: '8px 18px',
+    border: '1.5px solid #e2e8f0',
+    borderRadius: '24px',
     background: '#fff',
+    color: '#334155',
+    fontSize: '0.875rem',
+    fontWeight: 500,
     cursor: 'pointer',
-    fontSize: '0.9rem',
+    transition: 'all 0.2s ease',
+    outline: 'none',
   },
-  active: {
-    background: '#1e293b',
-    color: '#fff',
-    borderColor: '#1e293b',
-    fontWeight: 600,
+  dot: {
+    width: '8px',
+    height: '8px',
+    borderRadius: '50%',
+    flexShrink: 0,
   },
 };
 
