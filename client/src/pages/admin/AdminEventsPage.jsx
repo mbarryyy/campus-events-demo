@@ -31,6 +31,7 @@ function AdminEventsPage() {
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [formError, setFormError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const { addToast } = useToast();
 
@@ -58,6 +59,7 @@ function AdminEventsPage() {
       capacity: Number(form.capacity),
     };
 
+    setSubmitting(true);
     try {
       if (editingId) {
         await api.updateEvent(editingId, payload);
@@ -71,6 +73,8 @@ function AdminEventsPage() {
       fetchEvents();
     } catch (err) {
       setFormError(err.message || 'Something went wrong');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -212,8 +216,12 @@ function AdminEventsPage() {
               <button type="button" style={styles.cancelBtn} onClick={handleCancel}>
                 Cancel
               </button>
-              <button type="submit" style={styles.submitBtn}>
-                {editingId ? 'Update Event' : 'Create Event'}
+              <button
+                type="submit"
+                style={{ ...styles.submitBtn, ...(submitting ? { opacity: 0.6, cursor: 'not-allowed' } : {}) }}
+                disabled={submitting}
+              >
+                {submitting ? 'Saving...' : editingId ? 'Update Event' : 'Create Event'}
               </button>
             </div>
           </form>

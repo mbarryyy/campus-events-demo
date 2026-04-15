@@ -273,21 +273,71 @@ tr:hover td {
   background-color: #f8fafc;
 }
 
-/* ── Responsive ── */
+/* ── Responsive: Mobile ── */
 @media (max-width: 768px) {
-  /* Admin sidebar collapse to top bar */
-  .admin-layout {
+  /* Header: show hamburger, hide nav by default */
+  .hamburger-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .header-search {
+    display: none;
+  }
+
+  .header-nav {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
     flex-direction: column;
+    padding: 12px 24px 20px;
+    gap: 8px;
+    box-shadow: 0 8px 24px rgba(79, 70, 229, 0.3);
   }
 
-  /* Tables scroll horizontally */
-  .table-wrap {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+  .header-nav--open {
+    display: flex;
   }
 
-  /* Forms full-width */
-  .form-row {
+  .header-nav .header-nav-link,
+  .header-nav .header-login-btn,
+  .header-nav .header-register-btn,
+  .header-nav .header-admin-badge,
+  .header-nav .header-logout-btn {
+    width: 100%;
+    text-align: center;
+    padding: 10px 16px;
+  }
+
+  .header-inner {
+    position: relative;
+  }
+
+  /* Event grid: 1 column */
+  .event-grid {
     grid-template-columns: 1fr !important;
+  }
+
+  /* Admin panels stack */
+  .admin-panels {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Toast narrower on mobile */
+  .toast-container {
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+  }
+}
+
+/* ── Responsive: Tablet ── */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .event-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
   }
 }
