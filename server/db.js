@@ -41,6 +41,14 @@ db.exec(`
     registered_at TEXT    NOT NULL DEFAULT (datetime('now')),
     UNIQUE(user_id, event_id)
   );
+
+  CREATE TABLE IF NOT EXISTS bookmarks (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    event_id   INTEGER NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+    created_at TEXT    NOT NULL DEFAULT (datetime('now')),
+    UNIQUE(user_id, event_id)
+  );
 `);
 
 // Seed admin account if not exists

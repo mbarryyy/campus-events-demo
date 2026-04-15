@@ -129,8 +129,11 @@ function createEventsRouter(db) {
     if (req.user) {
       const reg = db.prepare('SELECT id FROM registrations WHERE user_id = ? AND event_id = ?').get(req.user.id, req.params.id);
       event.isRegistered = !!reg;
+      const bm = db.prepare('SELECT id FROM bookmarks WHERE user_id = ? AND event_id = ?').get(req.user.id, req.params.id);
+      event.isBookmarked = !!bm;
     } else {
       event.isRegistered = false;
+      event.isBookmarked = false;
     }
 
     res.json(event);

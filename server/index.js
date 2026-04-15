@@ -4,6 +4,7 @@ const createEventsRouter = require('./routes/events');
 const createAuthRouter = require('./routes/auth');
 const createRegistrationsRouter = require('./routes/registrations');
 const createAdminRouter = require('./routes/admin');
+const { createBookmarksRouter, createEventBookmarkRouter } = require('./routes/bookmarks');
 const errorHandler = require('./middleware/errorHandler');
 
 function createApp(db) {
@@ -15,6 +16,8 @@ function createApp(db) {
   app.use('/api/auth', createAuthRouter(db));
   app.use('/api/events', createEventsRouter(db));
   app.use('/api/events/:id/register', createRegistrationsRouter(db));
+  app.use('/api/events/:id/bookmark', createEventBookmarkRouter(db));
+  app.use('/api/bookmarks', createBookmarksRouter(db));
   app.use('/api/admin', createAdminRouter(db));
 
   app.use(errorHandler);
