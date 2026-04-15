@@ -174,6 +174,34 @@ function createEventsRouter(db) {
     res.json(event);
   });
 
+  // GET /api/events/:id/attendees — public, limited info
+  router.get('/:id/attendees', validateEventId, (req, res) => {
+    const event = db.prepare('SELECT id, title FROM events WHERE id = ?').get(req.params.id);
+    if (!event) {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+
+    const { total } = db.prepare('SELECT COUNT(*) as total FROM registrations WHERE event_id = ?').get(req.params.id);
+
+    const attendees = db.prepare(`
+      SELECT u.id, u.display_name
+      FROM registrations r
+      JOIN users u ON u.id = r.user_id
+      WHERE r.event_id = ?
+      ORDER BY r.registered_at ASC
+      LIMIT 5
+    `).all(req.params.id).map(row => ({
+      id: row.id,
+      displayName: row.display_name
+    }));
+
+    res.json({
+      event: { id: event.id, title: event.title },
+      attendees,
+      total
+    });
+  });
+
   // POST /api/events — create (admin only)
   router.post('/', authenticate, requireAdmin, validateEventBody, (req, res) => {
     const { title, date, time, location, category, capacity, description } = req.body;

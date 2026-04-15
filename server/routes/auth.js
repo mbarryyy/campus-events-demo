@@ -235,6 +235,43 @@ function createAuthRouter(db) {
     res.json({ activity: registrations });
   });
 
+  // GET /api/auth/dashboard — user stats
+  router.get('/dashboard', authenticate, (req, res) => {
+    const userId = req.user.id;
+    const today = new Date().toISOString().slice(0, 10);
+
+    const eventsRegistered = db.prepare('SELECT COUNT(*) as count FROM registrations WHERE user_id = ?').get(userId).count;
+    const upcomingCount = db.prepare(`
+      SELECT COUNT(*) as count FROM registrations r
+      JOIN events e ON e.id = r.event_id
+      WHERE r.user_id = ? AND e.date >= ?
+    `).get(userId, today).count;
+    const pastCount = db.prepare(`
+      SELECT COUNT(*) as count FROM registrations r
+      JOIN events e ON e.id = r.event_id
+      WHERE r.user_id = ? AND e.date < ?
+    `).get(userId, today).count;
+    const bookmarkCount = db.prepare('SELECT COUNT(*) as count FROM bookmarks WHERE user_id = ?').get(userId).count;
+
+    // Next 3 upcoming registered events
+    const upcomingEvents = db.prepare(`
+      SELECT e.id, e.title, e.date, e.time, e.location, e.category
+      FROM registrations r
+      JOIN events e ON e.id = r.event_id
+      WHERE r.user_id = ? AND e.date >= ?
+      ORDER BY e.date ASC, e.time ASC
+      LIMIT 3
+    `).all(userId, today);
+
+    res.json({
+      eventsRegistered,
+      upcomingCount,
+      pastCount,
+      bookmarkCount,
+      upcomingEvents
+    });
+  });
+
   return router;
 }
 
