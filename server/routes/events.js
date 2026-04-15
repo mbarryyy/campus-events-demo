@@ -9,7 +9,7 @@ function createEventsRouter(db) {
 
   // GET /api/events — list with pagination, sort, filter, search
   router.get('/', validateCategory, (req, res) => {
-    const { category, search, sort } = req.query;
+    const { category, search, sort, dateFrom, dateTo, hasSpots, timeOfDay } = req.query;
     const page = Math.max(1, parseInt(req.query.page) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 12));
     const offset = (page - 1) * limit;
@@ -26,6 +26,30 @@ function createEventsRouter(db) {
       conditions.push('(e.title LIKE ? OR e.description LIKE ?)');
       const term = `%${search}%`;
       params.push(term, term);
+    }
+
+    // Date range filters
+    if (dateFrom) {
+      conditions.push('e.date >= ?');
+      params.push(dateFrom);
+    }
+    if (dateTo) {
+      conditions.push('e.date <= ?');
+      params.push(dateTo);
+    }
+
+    // Has spots available filter
+    if (hasSpots === 'true') {
+      conditions.push('(e.capacity - COALESCE(rc_filter.cnt, 0)) > 0');
+    }
+
+    // Time of day filter
+    if (timeOfDay === 'morning') {
+      conditions.push("e.time >= '06:00' AND e.time < '12:00'");
+    } else if (timeOfDay === 'afternoon') {
+      conditions.push("e.time >= '12:00' AND e.time < '18:00'");
+    } else if (timeOfDay === 'evening') {
+      conditions.push("e.time >= '18:00'");
     }
 
     const whereClause = conditions.length > 0
@@ -48,11 +72,17 @@ function createEventsRouter(db) {
         orderClause = 'ORDER BY e.date ASC, e.time ASC';
     }
 
+    // Need the registration count subquery in FROM for hasSpots filter
+    const rcFilterJoin = hasSpots === 'true'
+      ? 'LEFT JOIN (SELECT event_id, COUNT(*) as cnt FROM registrations GROUP BY event_id) rc_filter ON rc_filter.event_id = e.id'
+      : '';
+
     // Count total
-    const countSql = `SELECT COUNT(*) as total FROM events e ${whereClause}`;
+    const countSql = `SELECT COUNT(*) as total FROM events e ${rcFilterJoin} ${whereClause}`;
     const { total } = db.prepare(countSql).get(...params);
 
     // Fetch events with registration count and creator info
+    const today = new Date().toISOString().slice(0, 10);
     const sql = `
       SELECT e.*,
         COALESCE(rc.cnt, 0) as registrationCount,
@@ -61,6 +91,7 @@ function createEventsRouter(db) {
       FROM events e
       LEFT JOIN (SELECT event_id, COUNT(*) as cnt FROM registrations GROUP BY event_id) rc ON rc.event_id = e.id
       LEFT JOIN users u ON u.id = e.created_by
+      ${rcFilterJoin}
       ${whereClause}
       ${orderClause}
       LIMIT ? OFFSET ?
@@ -79,6 +110,8 @@ function createEventsRouter(db) {
       capacity: row.capacity,
       imageUrl: row.image_url,
       registrationCount: row.registrationCount,
+      spotsLeft: row.capacity - row.registrationCount,
+      isPast: row.date < today,
       createdBy: row.creatorId ? { id: row.creatorId, displayName: row.creatorDisplayName } : null,
       createdAt: row.created_at
     }));
@@ -123,6 +156,7 @@ function createEventsRouter(db) {
       imageUrl: row.image_url,
       registrationCount: row.registrationCount,
       spotsLeft: row.capacity - row.registrationCount,
+      isPast: row.date < new Date().toISOString().slice(0, 10),
       createdBy: row.creatorId ? { id: row.creatorId, displayName: row.creatorDisplayName } : null,
       createdAt: row.created_at
     };
