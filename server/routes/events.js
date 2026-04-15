@@ -2,6 +2,7 @@ const express = require('express');
 const { validateEventBody, validateCategory, validateEventId } = require('../middleware/validate');
 const { authenticate, optionalAuth } = require('../middleware/auth');
 const requireAdmin = require('../middleware/requireAdmin');
+const { notifyEventRegistrants } = require('./notifications');
 
 function createEventsRouter(db) {
   const router = express.Router();
@@ -233,6 +234,14 @@ function createEventsRouter(db) {
     if (sets.length > 0) {
       values.push(req.params.id);
       db.prepare(`UPDATE events SET ${sets.join(', ')} WHERE id = ?`).run(...values);
+
+      // Notify registered users about the update
+      notifyEventRegistrants(db, {
+        eventId: req.params.id,
+        type: 'event_updated',
+        title: 'Event Updated',
+        message: `"${existing.title}" has been updated. Check the latest details.`
+      });
     }
 
     const updated = db.prepare('SELECT * FROM events WHERE id = ?').get(req.params.id);
@@ -252,10 +261,18 @@ function createEventsRouter(db) {
 
   // DELETE /api/events/:id — delete (admin only)
   router.delete('/:id', authenticate, requireAdmin, validateEventId, (req, res) => {
-    const existing = db.prepare('SELECT id FROM events WHERE id = ?').get(req.params.id);
+    const existing = db.prepare('SELECT id, title FROM events WHERE id = ?').get(req.params.id);
     if (!existing) {
       return res.status(404).json({ error: 'Event not found' });
     }
+
+    // Notify registered users before deleting
+    notifyEventRegistrants(db, {
+      eventId: req.params.id,
+      type: 'event_cancelled',
+      title: 'Event Cancelled',
+      message: `"${existing.title}" has been cancelled.`
+    });
 
     db.prepare('DELETE FROM events WHERE id = ?').run(req.params.id);
     res.json({ message: 'Event deleted successfully' });

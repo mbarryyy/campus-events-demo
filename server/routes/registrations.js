@@ -1,6 +1,7 @@
 const express = require('express');
 const { authenticate } = require('../middleware/auth');
 const { validateEventId } = require('../middleware/validate');
+const { createNotification } = require('./notifications');
 
 function createRegistrationsRouter(db) {
   const router = express.Router({ mergeParams: true });
@@ -32,6 +33,16 @@ function createRegistrationsRouter(db) {
     ).run(userId, eventId);
 
     const registration = db.prepare('SELECT * FROM registrations WHERE id = ?').get(result.lastInsertRowid);
+
+    // Get event title for notification
+    const eventInfo = db.prepare('SELECT title FROM events WHERE id = ?').get(eventId);
+    createNotification(db, {
+      userId,
+      type: 'registration_confirmed',
+      title: 'Registration Confirmed',
+      message: `You have successfully registered for "${eventInfo.title}"`,
+      eventId
+    });
 
     res.status(201).json({
       message: 'Successfully registered',

@@ -49,6 +49,17 @@ db.exec(`
     created_at TEXT    NOT NULL DEFAULT (datetime('now')),
     UNIQUE(user_id, event_id)
   );
+
+  CREATE TABLE IF NOT EXISTS notifications (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    type       TEXT    NOT NULL,
+    title      TEXT    NOT NULL,
+    message    TEXT    NOT NULL,
+    read       INTEGER NOT NULL DEFAULT 0,
+    event_id   INTEGER REFERENCES events(id) ON DELETE SET NULL,
+    created_at TEXT    NOT NULL DEFAULT (datetime('now'))
+  );
 `);
 
 // Seed admin account if not exists
