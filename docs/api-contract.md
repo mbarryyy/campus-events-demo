@@ -13,9 +13,10 @@ List all events, optionally filtered by category.
 
 ### Query Parameters
 
-| Param    | Type   | Required | Description                          |
-|----------|--------|----------|--------------------------------------|
-| category | string | No       | Filter by category (e.g. `Tech`, `Sports`) |
+| Param    | Type   | Required | Description                                              |
+|----------|--------|----------|----------------------------------------------------------|
+| category | string | No       | Filter by category (`Tech`, `Sports`, `Academic`, `Social`) |
+| search   | string | No       | Search by title or description (case-insensitive)        |
 
 ### Success Response
 
@@ -28,6 +29,7 @@ List all events, optionally filtered by category.
     "title": "Web Dev Workshop",
     "date": "2026-05-10",
     "category": "Tech",
+    "description": "Learn modern web development with React and Express",
     "created_at": "2026-04-15T00:00:00.000Z"
   }
 ]
@@ -41,7 +43,7 @@ Returns an empty array `[]` when no events match.
 |--------|------------------------|---------------------------------------------|
 | 400    | Invalid category value | `{ "error": "Invalid category" }`           |
 
-Valid categories: `Tech`, `Sports`.
+Valid categories: `Tech`, `Sports`, `Academic`, `Social`.
 
 ### Examples
 
@@ -51,6 +53,12 @@ curl http://localhost:3001/api/events
 
 # Filter by category
 curl http://localhost:3001/api/events?category=Tech
+
+# Search events
+curl http://localhost:3001/api/events?search=yoga
+
+# Combine search and category filter
+curl "http://localhost:3001/api/events?search=hackathon&category=Tech"
 ```
 
 ---
@@ -75,6 +83,7 @@ Get a single event by ID.
   "title": "Web Dev Workshop",
   "date": "2026-05-10",
   "category": "Tech",
+  "description": "Learn modern web development with React and Express",
   "created_at": "2026-04-15T00:00:00.000Z"
 }
 ```
@@ -104,17 +113,19 @@ Create a new event.
 
 ### Request Body
 
-| Field    | Type   | Required | Description                        |
-|----------|--------|----------|------------------------------------|
-| title    | string | Yes      | Event title (1-100 characters)     |
-| date     | string | Yes      | Event date in `YYYY-MM-DD` format  |
-| category | string | Yes      | Must be `Tech` or `Sports`         |
+| Field       | Type   | Required | Description                                              |
+|-------------|--------|----------|----------------------------------------------------------|
+| title       | string | Yes      | Event title (1-100 characters)                           |
+| date        | string | Yes      | Event date in `YYYY-MM-DD` format                        |
+| category    | string | Yes      | Must be `Tech`, `Sports`, `Academic`, or `Social`        |
+| description | string | No       | Event description (max 500 characters)                   |
 
 ```json
 {
   "title": "Intro to Docker",
   "date": "2026-06-01",
-  "category": "Tech"
+  "category": "Tech",
+  "description": "Hands-on introduction to containerization with Docker"
 }
 ```
 
@@ -124,10 +135,11 @@ Create a new event.
 
 ```json
 {
-  "id": 6,
+  "id": 13,
   "title": "Intro to Docker",
   "date": "2026-06-01",
   "category": "Tech",
+  "description": "Hands-on introduction to containerization with Docker",
   "created_at": "2026-04-15T12:00:00.000Z"
 }
 ```
@@ -139,7 +151,8 @@ Create a new event.
 | 400    | Missing required field           | `{ "error": "Title is required" }`                    |
 | 400    | Title empty or too long          | `{ "error": "Title must be between 1 and 100 characters" }` |
 | 400    | Invalid date format              | `{ "error": "Date must be in YYYY-MM-DD format" }`   |
-| 400    | Invalid category                 | `{ "error": "Category must be Tech or Sports" }`     |
+| 400    | Invalid category                 | `{ "error": "Category must be Tech, Sports, Academic, or Social" }` |
+| 400    | Description too long             | `{ "error": "Description must be 500 characters or fewer" }` |
 
 Validation order: title, date, category (first failing field wins).
 

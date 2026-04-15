@@ -36,6 +36,13 @@ body {
   --cat-sports: #10b981;
   --cat-academic: #8b5cf6;
   --cat-social: #ec4899;
+  --cat-music: #f59e0b;
+  --cat-career: #06b6d4;
+
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #3b82f6;
 
   --gray-50: #f8fafc;
   --gray-100: #f1f5f9;
@@ -75,4 +82,212 @@ button {
 img {
   max-width: 100%;
   display: block;
+}
+
+/* ── Header ── */
+.app-header {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(79, 70, 229, 0.3);
+}
+
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.header-title {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+
+.header-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1 1 320px;
+  max-width: 400px;
+}
+
+.header-search-icon {
+  position: absolute;
+  left: 12px;
+  width: 18px;
+  height: 18px;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.header-search-input {
+  width: 100%;
+  padding: 9px 16px 9px 40px;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  background-color: rgba(255, 255, 255, 0.95);
+  color: #1e293b;
+  outline: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.hamburger-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.9);
+  padding: 6px;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.header-nav-link {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 6px 10px;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+
+.header-nav-link:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.header-admin-badge {
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.header-login-btn {
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  transition: all 0.15s;
+}
+
+.header-login-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.header-register-btn {
+  color: #4f46e5;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: #fff;
+  transition: all 0.15s;
+}
+
+.header-register-btn:hover {
+  background: #f0f0ff;
+}
+
+.header-logout-btn {
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.header-logout-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* ── Focus visible ── */
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* ── Animations ── */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes toast-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ── Table hover ── */
+tr:hover td {
+  background-color: #f8fafc;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  /* Admin sidebar collapse to top bar */
+  .admin-layout {
+    flex-direction: column;
+  }
+
+  /* Tables scroll horizontally */
+  .table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Forms full-width */
+  .form-row {
+    grid-template-columns: 1fr !important;
+  }
 }

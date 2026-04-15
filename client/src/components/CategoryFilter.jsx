@@ -4,6 +4,8 @@ const CATEGORY_META = {
   Sports: { color: '#10b981' },
   Academic: { color: '#8b5cf6' },
   Social: { color: '#ec4899' },
+  Music: { color: '#f59e0b' },
+  Career: { color: '#06b6d4' },
 };
 
 function CategoryFilter({ categories, selected, onChange }) {
