@@ -1,17 +1,27 @@
 const express = require('express');
 const cors = require('cors');
-const eventsRouter = require('./routes/events');
+const createEventsRouter = require('./routes/events');
 
-const app = express();
-const PORT = process.env.PORT || 3001;
+function createApp(db) {
+  const app = express();
 
-app.use(cors());
-app.use(express.json());
+  app.use(cors());
+  app.use(express.json());
 
-app.use('/api/events', eventsRouter);
+  app.use('/api/events', createEventsRouter(db));
 
-const server = app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+  return app;
+}
 
-module.exports = { app, server };
+// Start server when run directly
+if (require.main === module) {
+  const db = require('./db');
+  const app = createApp(db);
+  const PORT = process.env.PORT || 3001;
+
+  app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
+}
+
+module.exports = { createApp };
