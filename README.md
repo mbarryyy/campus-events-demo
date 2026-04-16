@@ -180,10 +180,10 @@ The test suite includes 67 tests across 9 files covering auth, events, registrat
 
 The following features are planned for upcoming iterations:
 
-- **Event Comments** — Allow authenticated users to post and view comments on events (`GET`/`POST /api/events/:id/comments`, `comments` table, `CommentList` + `CommentForm` components)
-- **Event Image Upload** — Custom event cover images with drag-and-drop upload
-- **Email Notifications** — Send confirmation emails on registration and event updates
-- **Comment Moderation** — Admin ability to review and delete inappropriate comments
+- [ ] Event comments — allow users to discuss events
+- [ ] Event image upload — custom cover images
+- [ ] Email notifications — registration and update confirmations
+- [ ] Comment moderation — admin review and removal
 
 ## License
 
