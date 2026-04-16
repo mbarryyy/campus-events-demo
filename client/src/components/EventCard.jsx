@@ -36,14 +36,12 @@ function EventCard({ event, onBookmarkToggle, isBookmarked }) {
         }}
       >
         <div style={{ ...styles.hero, background: `linear-gradient(135deg, ${catColor}dd, ${catColor}88)` }}>
-          <div style={styles.heroContent}>
-            <span style={{ ...styles.badge, backgroundColor: 'rgba(255,255,255,0.25)', backdropFilter: 'blur(4px)' }}>
-              {event.category}
-            </span>
-            <div style={styles.heroDate}>
-              <span style={styles.heroDateText}>{formatDate(event.date)}</span>
-              {event.time && <span style={styles.heroTime}>{formatTime(event.time)}</span>}
-            </div>
+          <span style={{ ...styles.badge, backgroundColor: 'rgba(255,255,255,0.25)', backdropFilter: 'blur(4px)' }}>
+            {event.category}
+          </span>
+          <div style={styles.heroDate}>
+            <span style={styles.heroDateText}>{formatDate(event.date)}</span>
+            {event.time && <span style={styles.heroTime}>{formatTime(event.time)}</span>}
           </div>
           {onBookmarkToggle && (
             <button onClick={handleBookmark} style={styles.bookmarkBtn} aria-label="Bookmark">
@@ -53,6 +51,7 @@ function EventCard({ event, onBookmarkToggle, isBookmarked }) {
             </button>
           )}
         </div>
+
 
         <div style={styles.body}>
           <h3 style={styles.title}>{event.title}</h3>
@@ -105,15 +104,12 @@ const styles = {
   hero: {
     padding: '20px',
     position: 'relative',
-    minHeight: '100px',
-  },
-  heroContent: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    flexDirection: 'row-reverse',
+    minHeight: '110px',
   },
   heroDate: {
+    position: 'absolute',
+    bottom: '12px',
+    left: '20px',
     display: 'flex',
     flexDirection: 'column',
     gap: '2px',
@@ -129,6 +125,9 @@ const styles = {
     fontWeight: 500,
   },
   badge: {
+    position: 'absolute',
+    top: '12px',
+    left: '12px',
     padding: '4px 12px',
     borderRadius: '20px',
     fontSize: '0.7rem',
@@ -136,6 +135,7 @@ const styles = {
     color: '#fff',
     letterSpacing: '0.03em',
     textTransform: 'uppercase',
+    zIndex: 1,
   },
   bookmarkBtn: {
     position: 'absolute',
