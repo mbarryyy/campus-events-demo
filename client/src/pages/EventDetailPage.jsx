@@ -4,6 +4,7 @@ import { getEvent, getAttendees, registerForEvent, cancelRegistration, addBookma
 import { useAuth } from '../contexts/AuthContext';
 import { formatDate } from '../utils/formatDate';
 import CapacityBar from '../components/CapacityBar';
+import CommentSection from '../components/CommentSection';
 
 const CATEGORY_COLORS = {
   Tech: '#3b82f6', Sports: '#10b981', Academic: '#8b5cf6',
@@ -215,15 +216,7 @@ export default function EventDetailPage() {
         <hr style={styles.divider} />
 
         <div style={styles.commentSection}>
-          <h3 style={styles.sectionTitle}>Comments</h3>
-          <div style={styles.placeholder}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-            </svg>
-            <p style={styles.placeholderText}>
-              Comments coming soon — this feature is planned for a future update.
-            </p>
-          </div>
+          <CommentSection eventId={id} />
         </div>
       </div>
     </div>
@@ -306,12 +299,6 @@ const styles = {
   moreText: { marginLeft: '8px', fontSize: '0.85rem', color: '#64748b' },
   divider: { border: 'none', borderTop: '1px solid #e2e8f0', margin: '28px 0' },
   commentSection: {},
-  placeholder: {
-    display: 'flex', alignItems: 'center', gap: '12px',
-    padding: '16px', backgroundColor: '#f8fafc', borderRadius: '12px',
-    border: '1px dashed #e2e8f0',
-  },
-  placeholderText: { margin: 0, color: '#94a3b8', fontStyle: 'italic', fontSize: '0.875rem' },
   loadingText: { textAlign: 'center', color: '#64748b', padding: '60px 0' },
   notFound: {
     display: 'flex', flexDirection: 'column', alignItems: 'center',

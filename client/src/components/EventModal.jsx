@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { formatDate } from '../utils/formatDate';
+import CommentSection from './CommentSection';
 
 const CATEGORY_COLORS = {
   Tech: '#3b82f6',
@@ -60,15 +61,7 @@ function EventModal({ event, onClose }) {
 
           <hr style={styles.divider} />
 
-          <h3 style={styles.sectionHeader}>Comments</h3>
-          <div style={styles.placeholderBox}>
-            <svg style={styles.placeholderIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-            </svg>
-            <p style={styles.placeholder}>
-              Comments coming soon — this feature will be added via OpenSpec workflow
-            </p>
-          </div>
+          <CommentSection eventId={event.id} />
         </div>
       </div>
     </div>
@@ -164,34 +157,6 @@ const styles = {
     border: 'none',
     borderTop: '1px solid #e2e8f0',
     margin: '24px 0',
-  },
-  sectionHeader: {
-    margin: '0 0 12px 0',
-    fontSize: '1.05rem',
-    fontWeight: 600,
-    color: '#1e293b',
-  },
-  placeholderBox: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-    padding: '16px',
-    backgroundColor: '#f8fafc',
-    borderRadius: '12px',
-    border: '1px dashed #e2e8f0',
-  },
-  placeholderIcon: {
-    width: '24px',
-    height: '24px',
-    color: '#cbd5e1',
-    flexShrink: 0,
-  },
-  placeholder: {
-    margin: 0,
-    color: '#94a3b8',
-    fontStyle: 'italic',
-    fontSize: '0.875rem',
-    lineHeight: 1.4,
   },
 };
 

@@ -176,6 +176,29 @@ export function markAllNotificationsRead() {
   });
 }
 
+// ── Comments ──
+export function getComments(eventId, page = 1) {
+  const query = new URLSearchParams({ page });
+  return request(`${API_BASE}/events/${eventId}/comments?${query}`, {
+    headers: getHeaders(false),
+  });
+}
+
+export function createComment(eventId, body) {
+  return request(`${API_BASE}/events/${eventId}/comments`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify({ body }),
+  });
+}
+
+export function deleteComment(eventId, commentId) {
+  return request(`${API_BASE}/events/${eventId}/comments/${commentId}`, {
+    method: 'DELETE',
+    headers: getHeaders(false),
+  });
+}
+
 // ── Admin ──
 export function getAdminStats() {
   return request(`${API_BASE}/admin/stats`, { headers: getHeaders(false) });
